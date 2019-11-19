@@ -2,6 +2,7 @@
 import random
 import smtplib
 import dns.resolver
+import re
 
 from flask import Flask
 from flask import request
@@ -13,7 +14,16 @@ def fetch_mx(host):
     return res
 
 
+def validateEmail(email):
+    if len(email) > 7:
+        if re.match("^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$", email) != None:
+            return True
+    return False
+
+
 def verify_istrue(email):
+    if not validateEmail(email):
+        return False
     try:
         name, host = email.split('@')
 
@@ -55,6 +65,7 @@ class EmailVerifyApi(object):
     def start(cls):
         verify = EmailVerifyApi()
         verify.run()
+
 
 if __name__ == '__main__':
     EmailVerifyApi.start()
